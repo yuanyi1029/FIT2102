@@ -117,224 +117,179 @@ const todo = {
  * @param item Todo item
  * @returns Prettified todo item
  */
-// const prettifyTodoItem = (item: TodoItem): string => {
-//   return Object.entries(item)
-// };
-const test = {
-    userId: 1,
-    id: 1,
-    title: "delectus aut autem",
-    completed: false,
+const prettifyTodoItem = (item) => {
+    return Object.entries(item).map(each => each.join(": ")).join(" | ");
 };
-console.log(Object.entries(test));
-// Object.entries
-// Array.prototype.join
-// /**
-//  *
-//  * @param content Collection of todo items
-//  * @returns Prettified content
-//  */
-// const prettifyContent = (content: ReadonlyArray<TodoItem>): string =>
-//   IMPLEMENT_THIS;
-// /**
-//  *
-//  * @param todo Todo object
-//  * @returns prettified representation of todo data
-//  *
-//  * /Hint/: String templates can make this look a lot nicer
-//  *  `some string ${variable_expression} some other string`
-//  *
-//  * /Hint 2/: Object destructuring can be used in the arguments
-//  *  e.g. ({ someKey }) => someKey
-//  */
-// const prettifyTodo = (todo: Todo): string => IMPLEMENT_THIS;
-// outputText("pretty_object_output", prettifyTodo(todo).toString());
-// /*****************************************************************
-//  * Exercise 3a
-//  *
-//  * We will now look at defining recursive types with generics. This is
-//  * very useful in creating our own custom data types and data structures.
-//  *
-//  * see: https://tgdwyer.github.io/typescript1/#generic-types
-//  *
-//  * The binary tree is a very basic recursive data structure which stores
-//  * a data value, and two children.
-//  *
-//  * Define the BinaryTree type and binaryTree constructor.
-//  */
-// type BinaryTree<T extends Object> = Readonly<{
-//   data: T;
-//   left?: BinaryTree<T>;
-//   right?: BinaryTree<T>;
-// }>;
-// /**
-//  * Creates a binary tree node
-//  *
-//  * /Hint/: Remember to declare the generic type!
-//  *
-//  * /Hint 2/: The ? is used to indicate an optional parameter
-//  *  e.g. (x: int, y?: int) => {}
-//  *
-//  * /Hint 3/: You may need to cast the object
-//  *
-//  * @param data Data to store at node
-//  * @param left Left child
-//  * @param right Right child
-//  * @returns Binary tree node
-//  */
-// const binaryTree = (
-//   data: IMPLEMENT_THIS,
-//   left?: IMPLEMENT_THIS,
-//   right?: IMPLEMENT_THIS
-// ): BinaryTree<IMPLEMENT_THIS> => IMPLEMENT_THIS;
-// const binaryTreeExample = binaryTree(
-//   1,
-//   binaryTree(2, binaryTree(3)),
-//   binaryTree(4, binaryTree(5), binaryTree(6))
-// );
-// /*****************************************************************
-//  * Exercise 3b
-//  *
-//  * Implement the following functions to pretty print a binary tree.
-//  *
-//  * What this means is that the value of each node is printed, and
-//  * the children are indented by a certain amount. Note that the tree
-//  * can be of any depth and may have missing children.
-//  *
-//  * /Hint/: Recursive data structures are very conducive to recursion!
-//  *
-//  * Suggested format:
-//  *
-//  * 1
-//  * |- 2
-//  * |- |- 3
-//  * |- 4
-//  * |- |- 5
-//  * |- |- 6
-//  *
-//  * You may choose a different format if you wish as long as it is
-//  * reasonably readable. Parent, children, and siblings must be
-//  * clearly distinguishable.
-//  *
-//  * /Note/: You can add parameters to functions if you wish, as long
-//  *  as it doesn't affect the current usage (i.e. tests). This can be
-//  *  done by adding an optional/default parameter.
-//  *  E.g.
-//  *    function prettifyBinaryTree<T extends Object>(node: BinaryTree<T>): string
-//  *    function prettifyBinaryTree<T extends Object>(node: BinaryTree<T>, anotherParameter = ""): string
-//  */
-// /**
-//  * Pretty print a binary tree
-//  *
-//  * @param node Root node of binary tree
-//  * @returns Prettified binary tree
-//  */
-// function prettifyBinaryTree<T extends Object>(node: BinaryTree<T>): string {
-//   const current = node.data.toString();
-//   const left = IMPLEMENT_THIS;
-//   const right = IMPLEMENT_THIS;
-//   return IMPLEMENT_THIS;
-// }
-// const prettyBinaryTree = prettifyBinaryTree(binaryTreeExample);
-// outputText("pretty_btree_output", prettyBinaryTree);
-// /*****************************************************************
-//  * Exercise 4a
-//  *
-//  * Implement prettyPrintNaryTree, which takes a NaryTree as input
-//  * and returns a list of the type expected by your nest function
-//  */
-// type NaryTree<T extends Object> = Readonly<{
-//   data: IMPLEMENT_THIS;
-//   children: IMPLEMENT_THIS;
-// }>;
-// const naryTree = <T extends Object>(
-//   data: IMPLEMENT_THIS,
-//   children: IMPLEMENT_THIS = []
-// ) => IMPLEMENT_THIS;
-// const naryTreeExample = naryTree(1, [
-//   naryTree(2),
-//   naryTree(3, [naryTree(41), naryTree(42), naryTree(43)]),
-//   naryTree(5, [naryTree(6)]),
-// ]);
-// /*****************************************************************
-//  * Exercise 4b
-//  *
-//  * Implement the following functions to pretty print an nary tree.
-//  *
-//  * /Hint/: What's the difference between 3b and 4b?
-//  *
-//  * Suggested format:
-//  *
-//  * 1
-//  * |- 2
-//  * |- 3
-//  * |- |- 41
-//  * |- |- 42
-//  * |- |- 43
-//  * |- 5
-//  * |- |- 6
-//  *
-//  * You may choose a different format if you wish as long as it is
-//  * reasonably readable. Parent, children, and siblings must be
-//  * clearly distinguishable.
-//  *
-//  * /Note/: You can add parameters to functions if you wish, as long
-//  *  as it doesn't affect the current usage (i.e. tests). This can be
-//  *  done by adding an optional/default parameter.
-//  *  E.g.
-//  *    function prettifyNaryTree<T extends Object>(node: NaryTree<T>): string
-//  *    function prettifyNaryTree<T extends Object>(node: NaryTree<T>, anotherParameter = ""): string
-//  */
-// /**
-//  * Prettify an Nary tree
-//  *
-//  * @param node Root of Nary tree
-//  * @returns Prettified Nary tree
-//  */
-// function prettifyNaryTree<T extends Object>(node: NaryTree<T>): string {
-//   const current = node.data.toString();
-//   const children = IMPLEMENT_THIS;
-//   return [current, ...children].filter(Boolean).join("\n");
-// }
-// const prettyNaryTree = prettifyNaryTree(naryTreeExample);
-// outputText("pretty_ntree_output", prettyNaryTree);
-// /*****************************************************************
-//  * Exercise 5 (Supplementary)
-//  *   ___  _   _    __    __    __    ____  _  _  ___  ____
-//  *  / __)( )_( )  /__\  (  )  (  )  ( ___)( \( )/ __)( ___)
-//  * ( (__  ) _ (  /(__)\  )(__  )(__  )__)  )  (( (_-. )__)
-//  *  \___)(_) (_)(__)(__)(____)(____)(____)(_)\_)\___/(____)
-//  *
-//  */
-// type jsonTypes =
-//   | Array<jsonTypes>
-//   | { [key: string]: jsonTypes }
-//   | string
-//   | boolean
-//   | number
-//   | null;
-// /**
-//  * For this, we have a series of "base cases" which are the primitive or simple
-//  * json value types - string, boolean, number, null - which can just be
-//  * encoded as strings and coverted to the List line format.
-//  *
-//  * For more complex types like Array and Object, we will recursively call
-//  * this function to convert their elements into the required format, add
-//  * indentation, and wrap with brackets.
-//  */
-// const prettifyJson: (json: jsonTypes) => string = (json) => {
-//   return IMPLEMENT_THIS;
-// };
-// const json = {
-//   unit: "FIT2102",
-//   year: 2021,
-//   semester: "S2",
-//   active: true,
-//   assessments: {
-//     week1: null,
-//     week2: "Tutorial 1 Exercise",
-//     week3: "Tutorial 2 Exercise",
-//   },
-//   languages: ["Javascript", "Typescript", "Haskell", "Minizinc"],
-// };
-// outputText("pretty_json_output", prettifyJson(json));
+/**
+ *
+ * @param content Collection of todo items
+ * @returns Prettified content
+ */
+const prettifyContent = (content) => {
+    return content.reduce((accumulator, each) => accumulator + prettifyTodoItem(each) + "\n", "");
+};
+/**
+ *
+ * @param todo Todo object
+ * @returns prettified representation of todo data
+ *
+ * /Hint/: String templates can make this look a lot nicer
+ *  `some string ${variable_expression} some other string`
+ *
+ * /Hint 2/: Object destructuring can be used in the arguments
+ *  e.g. ({ someKey }) => someKey
+ */
+const prettifyTodo = ({ timestamp, from, content }) => {
+    // return `timestamp: ${timestamp} \nfrom: ${from} \ncontent: \n${prettifyContent(content)}`
+    return Object.entries(todo)
+        .filter(each => each[0] !== 'verySecretVerySecureCodeThatDefinitelyDoesNotContainAnythingUseful')
+        .map(each => each[0] === 'content' ? `${each[0]}:\n${prettifyContent(each[1])}` : each.join(": "))
+        .join("\n");
+};
+outputText("pretty_object_output", prettifyTodo(todo).toString());
+/**
+ * Creates a binary tree node
+ *
+ * /Hint/: Remember to declare the generic type!
+ *
+ * /Hint 2/: The ? is used to indicate an optional parameter
+ *  e.g. (x: int, y?: int) => {}
+ *
+ * /Hint 3/: You may need to cast the object
+ *
+ * @param data Data to store at node
+ * @param left Left child
+ * @param right Right child
+ * @returns Binary tree node
+ */
+const binaryTree = (data, left, right) => {
+    return { data, left, right };
+};
+const binaryTreeExample = binaryTree(1, binaryTree(2, binaryTree(3)), binaryTree(4, binaryTree(5), binaryTree(6)));
+/*****************************************************************
+ * Exercise 3b
+ *
+ * Implement the following functions to pretty print a binary tree.
+ *
+ * What this means is that the value of each node is printed, and
+ * the children are indented by a certain amount. Note that the tree
+ * can be of any depth and may have missing children.
+ *
+ * /Hint/: Recursive data structures are very conducive to recursion!
+ *
+ * Suggested format:
+ *
+ * 1
+ * |- 2
+ * |- |- 3
+ * |- 4
+ * |- |- 5
+ * |- |- 6
+ *
+ * You may choose a different format if you wish as long as it is
+ * reasonably readable. Parent, children, and siblings must be
+ * clearly distinguishable.
+ *
+ * /Note/: You can add parameters to functions if you wish, as long
+ *  as it doesn't affect the current usage (i.e. tests). This can be
+ *  done by adding an optional/default parameter.
+ *  E.g.
+ *    function prettifyBinaryTree<T extends Object>(node: BinaryTree<T>): string
+ *    function prettifyBinaryTree<T extends Object>(node: BinaryTree<T>, anotherParameter = ""): string
+ */
+/**
+ * Pretty print a binary tree
+ *
+ * @param node Root node of binary tree
+ * @returns Prettified binary tree
+ */
+function prettifyBinaryTree(node, depth = 0, output = "") {
+    const current = node.data.toString();
+    const left = node.left;
+    const right = node.right;
+    if (current) {
+        output += `${"|- ".repeat(depth)}${current}\n`;
+        if (left)
+            output = prettifyBinaryTree(left, depth + 1, output);
+        if (right)
+            output = prettifyBinaryTree(right, depth + 1, output);
+    }
+    return output;
+}
+const prettyBinaryTree = prettifyBinaryTree(binaryTreeExample);
+outputText("pretty_btree_output", prettyBinaryTree);
+const naryTree = (data, children = []) => {
+    return { data, children };
+};
+const naryTreeExample = naryTree(1, [
+    naryTree(2),
+    naryTree(3, [naryTree(41), naryTree(42), naryTree(43)]),
+    naryTree(5, [naryTree(6)]),
+]);
+/*****************************************************************
+ * Exercise 4b
+ *
+ * Implement the following functions to pretty print an nary tree.
+ *
+ * /Hint/: What's the difference between 3b and 4b?
+ *
+ * Suggested format:
+ *
+ * 1
+ * |- 2
+ * |- 3
+ * |- |- 41
+ * |- |- 42
+ * |- |- 43
+ * |- 5
+ * |- |- 6
+ *
+ * You may choose a different format if you wish as long as it is
+ * reasonably readable. Parent, children, and siblings must be
+ * clearly distinguishable.
+ *
+ * /Note/: You can add parameters to functions if you wish, as long
+ *  as it doesn't affect the current usage (i.e. tests). This can be
+ *  done by adding an optional/default parameter.
+ *  E.g.
+ *    function prettifyNaryTree<T extends Object>(node: NaryTree<T>): string
+ *    function prettifyNaryTree<T extends Object>(node: NaryTree<T>, anotherParameter = ""): string
+ */
+/**
+ * Prettify an Nary tree
+ *
+ * @param node Root of Nary tree
+ * @returns Prettified Nary tree
+ */
+function prettifyNaryTree(node, depth = 1) {
+    const current = node.data.toString();
+    const children = node.children.map(each => `${"|- ".repeat(depth)}${prettifyNaryTree(each, depth + 1)}`);
+    return [current, ...children].filter(Boolean).join("\n");
+}
+const prettyNaryTree = prettifyNaryTree(naryTreeExample);
+outputText("pretty_ntree_output", prettyNaryTree);
+/**
+ * For this, we have a series of "base cases" which are the primitive or simple
+ * json value types - string, boolean, number, null - which can just be
+ * encoded as strings and coverted to the List line format.
+ *
+ * For more complex types like Array and Object, we will recursively call
+ * this function to convert their elements into the required format, add
+ * indentation, and wrap with brackets.
+ */
+const prettifyJson = (json) => {
+    return IMPLEMENT_THIS;
+};
+const json = {
+    unit: "FIT2102",
+    year: 2021,
+    semester: "S2",
+    active: true,
+    assessments: {
+        week1: null,
+        week2: "Tutorial 1 Exercise",
+        week3: "Tutorial 2 Exercise",
+    },
+    languages: ["Javascript", "Typescript", "Haskell", "Minizinc"],
+};
+outputText("pretty_json_output", prettifyJson(json));
