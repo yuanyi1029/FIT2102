@@ -1,0 +1,141 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Week 4 Exercises</title>
+
+    <script id="setTheme">
+      const dark = localStorage.getItem("darkCSS")
+        ? JSON.parse(localStorage.getItem("darkCSS"))
+        : false;
+      document.documentElement.setAttribute(
+        "data-theme",
+        dark ? "dark" : "light"
+      );
+    </script>
+
+    <link href="node_modules/mocha/mocha.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div class="sliderWrapper">
+      <div>
+        <p>Dark Mode&nbsp;&nbsp;</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="light_vs_dark_toggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="main-div">
+      <div class="description">
+        <h1>Week 5 - Pure RNG and state</h1>
+
+        <h2 class="heading">Exercise 1 - Creating a random number stream</h2>
+        <div class="tests" id="exercise_1_suite"></div>
+
+        <h2 class="heading">
+          Exercise 2 - Improving a Visualisation of a Monte Carlo approximation
+          of Pi
+        </h2>
+        <p>
+          Pi approximation:
+          <span id="value_piApproximation">
+            ...Update this text to show the Pi approximation...
+          </span>
+        </p>
+        <svg
+          id="piApproximationVis"
+          width="300"
+          height="300"
+          viewBox="0 0 300 300"
+        >
+          <rect x="0" y="0" width="300" height="300" fill="#dbedff" />
+          <circle cx="150" cy="150" r="150" fill="#b7dbff" />
+        </svg>
+      </div>
+    </div>
+
+    <div id="mocha" class="test"></div>
+    <script src="node_modules/mocha/mocha.js"></script>
+    <script src="node_modules/chai/chai.js"></script>
+    <script type="module" class="mocha-init">
+      mocha.setup("bdd");
+      const expect = chai.expect;
+    </script>
+    <script type="module" src="./src/main.ts"></script>
+    <script type="module" src="./test/main.test.ts"></script>
+    <script type="module">
+      mocha.checkLeaks(false);
+      mocha.run(() => {
+        const mochaReport = document.getElementById("mocha-report");
+        Array.from(mochaReport.children).forEach((element) => {
+          console.log(element);
+          const exerciseId = element.children[0].innerText,
+            exerciseTestResults = element.children[1],
+            exerciseDiv = document.createElement("div");
+          exerciseDiv.id = "mocha";
+          exerciseDiv.className = "test";
+          exerciseDiv.appendChild(exerciseTestResults);
+          document.getElementById(exerciseId).appendChild(exerciseDiv);
+        });
+        mochaReport.remove();
+
+        // persist vertical scroll position
+        const scrollY = sessionStorage.getItem("scrollY");
+        if (scrollY !== null) {
+          window.scroll(0, scrollY);
+        }
+        window.onunload = () =>
+          sessionStorage.setItem("scrollY", window.scrollY);
+      });
+
+      const collapsibles = Array.from(
+        document.getElementsByClassName("collapsible")
+      );
+      // get collapse status
+      const collapseStatus = sessionStorage.getItem("collapseStatus")
+        ? JSON.parse(sessionStorage.getItem("collapseStatus"))
+        : collapsibles.map((coll) => coll.classList.contains("active"));
+
+      collapsibles.forEach((coll, i) => {
+        // expand if previously expanded
+        if (collapseStatus[i]) {
+          coll.classList.add("active");
+          const content = coll.nextElementSibling;
+          content.style.display = "block";
+        }
+
+        coll.addEventListener("click", function () {
+          this.classList.toggle("active");
+          collapseStatus[i] = !collapseStatus[i];
+          const content = this.nextElementSibling;
+          content.style.display = collapseStatus[i] ? "block" : "none";
+          // save collapse status on change
+          sessionStorage.setItem(
+            "collapseStatus",
+            JSON.stringify(collapseStatus)
+          );
+        });
+      });
+
+      // persist dark/light choice in localstorage
+      const checkbox = document.getElementById("light_vs_dark_toggle");
+      const darkCSS = localStorage.getItem("darkCSS")
+        ? JSON.parse(localStorage.getItem("darkCSS"))
+        : false;
+      if (darkCSS) {
+        checkbox.checked = true;
+      }
+
+      checkbox.addEventListener("change", (event) => {
+        const dark = event.target.checked;
+        document.documentElement.setAttribute(
+          "data-theme",
+          dark ? "dark" : "light"
+        );
+        localStorage.setItem("darkCSS", JSON.stringify(dark));
+      });
+    </script>
+  </body>
+</html>

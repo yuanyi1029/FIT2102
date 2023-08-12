@@ -171,7 +171,6 @@ const todo: Todo = {
 // Object.entries returns an array of arrays
 // .join() takes in an array, returns a string
 const prettifyTodoItem = (item: TodoItem): string => {
-  console.log(Object.entries(item).map(each => each.join(": ")))
   return Object.entries(item).map(each => each.join(": ")).join(" | ")
 };
 
@@ -181,7 +180,7 @@ const prettifyTodoItem = (item: TodoItem): string => {
  * @returns Prettified content
  */
 const prettifyContent = (content: ReadonlyArray<TodoItem>): string => {
-  return content.reduce((accumulator, each) => accumulator + prettifyTodoItem(each) + "\n" , "")
+  return content.map(each => prettifyTodoItem(each)).join("\n")
 };
 
 /**
@@ -195,16 +194,9 @@ const prettifyContent = (content: ReadonlyArray<TodoItem>): string => {
  * /Hint 2/: Object destructuring can be used in the arguments
  *  e.g. ({ someKey }) => someKey
  */
-// Object.entries returns an array of arrays
-// .filter() to filter out verySecret
-// .map() to loop through each array, if 'content' then apply function, else join with ":"
-// join everything with "\n"
 const prettifyTodo = (todo: Todo): string => {
-  console.log(Object.entries(todo))
-  return Object.entries(todo)
-          .filter(each => each[0] !== 'verySecretVerySecureCodeThatDefinitelyDoesNotContainAnythingUseful')
-          .map(each => each[0] === 'content' ? `${each[0]}:\n${prettifyContent(each[1])}` : each.join(": "))
-          .join("\n")
+  const {timestamp, from, content} = todo
+  return `timestamp: ${timestamp} \nfrom: ${from} \ncontent: \n${prettifyContent(content)}`;
 };
 
 outputText("pretty_object_output", prettifyTodo(todo).toString());
@@ -244,12 +236,12 @@ type BinaryTree<T extends Object> = Readonly<{
  * @param right Right child
  * @returns Binary tree node
  */
-const binaryTree = <T extends object>(
+const binaryTree = <T extends Object>(
   data: T,
   left?: BinaryTree<T>,
   right?: BinaryTree<T>,
 ): BinaryTree<T> => {
-  return ({data, left, right} as BinaryTree<T>)
+  return {data, left, right} as BinaryTree<T>
 };
 
 const binaryTreeExample = binaryTree(
@@ -301,31 +293,12 @@ function prettifyBinaryTree<T extends Object>(node: BinaryTree<T> , depth = 0): 
   const left = node.left;
   const right = node.right;
 
-  const updatedOutput = current ? `${"|- ".repeat(depth)}${current}\n`: "";
-
+  const currentOutput = current ? `${"|- ".repeat(depth)}${current}\n`: "";
   const leftOutput = left ? prettifyBinaryTree(left, depth + 1) : "";
   const rightOutput = right ? prettifyBinaryTree(right, depth + 1) : "";
 
-  return `${updatedOutput}${leftOutput}${rightOutput}`;
+  return `${currentOutput}${leftOutput}${rightOutput}`;
 }
-
-// function prettifyBinaryTree<T extends Object>(node: BinaryTree<T> , depth = 0, output = ""): string {
-//   const current = node.data.toString();
-
-//   const left = node.left;
-//   const right = node.right;
-  
-//   if (current){
-//     output += `${"|- ".repeat(depth)}${current}\n`
-//     if (left){
-//       output = prettifyBinaryTree(left, depth + 1, output)
-//     }
-//     if (right){
-//       output = prettifyBinaryTree(right, depth + 1, output)
-//     }
-//   }
-//   return output
-// }
 
 const prettyBinaryTree = prettifyBinaryTree(binaryTreeExample);
 outputText("pretty_btree_output", prettyBinaryTree);
@@ -339,12 +312,12 @@ outputText("pretty_btree_output", prettyBinaryTree);
 
 type NaryTree<T extends Object> = Readonly<{
   data: T;
-  children: NaryTree<T>[];
+  children: ReadonlyArray<NaryTree<T>>;
 }>;
 
 const naryTree = <T extends Object>(
   data: T,
-  children:  NaryTree<T>[] = []
+  children: ReadonlyArray<NaryTree<T>> = []
 ): NaryTree<T> => {
   return {data, children}
 };

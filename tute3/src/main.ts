@@ -135,8 +135,12 @@ function mousePosObservable() {
   const source$ = fromEvent<MouseEvent>(document, "mousemove");
 
   source$
-    .pipe(IMPLEMENT_THIS) // This must be pure
-    .subscribe(IMPLEMENT_THIS); // Side effects should be contained here
+    .pipe(map(e => ({x: e.clientX, y: e.clientY}))) // This must be pure
+    .subscribe(e => {
+      const p = e.x + ", " + e.y
+      elem.innerHTML = p
+      e.x > 400 ? elem.classList.add("highlight") : elem.classList.remove("highlight");
+    }); // Side effects should be contained here
 }
 
 /*****************************************************************
@@ -162,18 +166,20 @@ function mousePosObservable() {
 
 function animatedRect() {
   const rect = initialiseRect(startProps, "animatedRect");
-
+  
   /** Write your code after here */
-
-  const source$ = IMPLEMENT_THIS;
+  
+  const source$ = interval(35);
 
   const move$ = source$
     .pipe(
-      takeUntil(IMPLEMENT_THIS),
+      
+      takeUntil(interval(1000)),
 
-      scan(IMPLEMENT_THIS)
+      // scan((acc, value) => acc + value, 100) // For it to move exponentially 
+      scan((acc, _) => acc + 10, 100)
     )
-    .subscribe((newX: IMPLEMENT_THIS) => rect.setAttribute("x", String(newX)));
+    .subscribe((newX: number) => rect.setAttribute("x", String(newX)));
 }
 
 /*****************************************************************
@@ -201,16 +207,19 @@ function animatedRect2() {
   const moveDownRight$ = interval(10)
     .pipe(
       // Stop taking values after some amount of time
-      IMPLEMENT_THIS,
+      takeUntil(interval(1410)),
 
       // Update position of rectangle
-      IMPLEMENT_THIS
+      scan((acc, _) => ({x: acc.x + 2, y: acc.y + 2}), {x: 100, y: 100})
+
     )
-    .subscribe(({ x, y }: IMPLEMENT_THIS) => {
+    .subscribe(({ x, y }: {x: number, y: number}) => {
       rect.setAttribute("x", String(x));
       rect.setAttribute("y", String(y));
     });
 }
+
+// interval(10).subscribe(console.log)
 
 /*****************************************************************
  * Exercise 4
@@ -239,24 +248,30 @@ function keyboardControl() {
    * @returns Observable stream that indicates changes in state for
    *  the particular keypress
    */
-  const fromKey = (keyCode: string, IMPLEMENT_THIS: IMPLEMENT_THIS) =>
+  const fromKey = (keyCode: string, axis: string, amount: number) =>
     key$.pipe(
       filter(({ code }) => code === keyCode),
-      map(() => IMPLEMENT_THIS)
-    );
+      map(() => ({axis: axis, amount: amount}))
+    )
+
+  // const fromKey = (keyCode: string, IMPLEMENT_THIS: IMPLEMENT_THIS) =>
+  //   key$.pipe(
+  //     filter(({ code }) => code === keyCode),
+  //     map(() => IMPLEMENT_THIS)
+  //   );
 
   /**
    * /Hint/: QW4gb2JqZWN0IGxpa2UgeyBheGlzOiAneCcgfCAneScsIGFtb3VudDogaW50IH0gY2FuIGJlIHVzZWQgdG8gcmVwcmVzZW50IGEgcGFydGljdWxhciBrZXlwcmVzcy4gRS5nLiBQcmVzc2luZyBLZXlBIG1pZ2h0IHByb2R1Y2UgeyBheGlzOiAneCcsIGFtb3VudDogLTEwIH0=
    */
 
   /** Decrease x */
-  const left$ = fromKey("KeyA", IMPLEMENT_THIS);
+  const left$ = fromKey("KeyA", "x", -10);
   /** Decrease y */
-  const up$ = fromKey("KeyW", IMPLEMENT_THIS);
+  const up$ = fromKey("KeyW", "y", 10);
   /** Increase x */
-  const right$ = fromKey("KeyD", IMPLEMENT_THIS);
+  const right$ = fromKey("KeyD", "x", 10);
   /** Increase y */
-  const down$ = fromKey("KeyS", IMPLEMENT_THIS);
+  const down$ = fromKey("KeyS", "y", -10);
 
   /**
    * /Hint/: What operator can we use to merge observables?
@@ -266,12 +281,21 @@ function keyboardControl() {
    * /Hint 2/: This should make use of the scan function
    */
 
-  IMPLEMENT_THIS(left$, down$, up$, right$)
-    .pipe()
+  merge(left$, down$, up$, right$)
+    .pipe(
+      scan((acc, obj) => obj.axis === "x" ? ({x: acc.x + obj.amount, y: acc.y}) : ({x: acc.x, y: acc.y + obj.amount}), {x: 100, y: 100})
+    )
     .subscribe(({ x, y }: IMPLEMENT_THIS) => {
       rect.setAttribute("x", String(x));
       rect.setAttribute("y", String(y));
     });
+
+  // IMPLEMENT_THIS(left$, down$, up$, right$)
+  //   .pipe()
+  //   .subscribe(({ x, y }: IMPLEMENT_THIS) => {
+  //     rect.setAttribute("x", String(x));
+  //     rect.setAttribute("y", String(y));
+  //   });
 }
 
 /**
