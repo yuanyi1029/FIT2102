@@ -51,7 +51,7 @@ import {
   zip,
   partition,
 } from "rxjs";
-import { concatMap, filter, map, scan, takeUntil } from "rxjs/operators";
+import { mergeMap, concatMap, filter, map, scan, takeUntil } from "rxjs/operators";
 
 // Stub value to indicate an implementation
 const IMPLEMENT_THIS: any = undefined;
@@ -169,7 +169,7 @@ function animatedRect() {
   
   /** Write your code after here */
   
-  const source$ = interval(35);
+  const source$ = interval(10);
 
   const move$ = source$
     .pipe(
@@ -177,7 +177,7 @@ function animatedRect() {
       takeUntil(interval(1000)),
 
       // scan((acc, value) => acc + value, 100) // For it to move exponentially 
-      scan((acc, _) => acc + 10, 100)
+      scan((acc, _) => acc + 3, startProps.x)
     )
     .subscribe((newX: number) => rect.setAttribute("x", String(newX)));
 }
@@ -210,7 +210,7 @@ function animatedRect2() {
       takeUntil(interval(1410)),
 
       // Update position of rectangle
-      scan((acc, _) => ({x: acc.x + 2, y: acc.y + 2}), {x: 100, y: 100})
+      scan((acc, _) => ({x: acc.x + 2, y: acc.y + 2}), {x: startProps.x, y: startProps.y})
 
     )
     .subscribe(({ x, y }: {x: number, y: number}) => {
@@ -218,8 +218,6 @@ function animatedRect2() {
       rect.setAttribute("y", String(y));
     });
 }
-
-// interval(10).subscribe(console.log)
 
 /*****************************************************************
  * Exercise 4
@@ -254,12 +252,6 @@ function keyboardControl() {
       map(() => ({axis: axis, amount: amount}))
     )
 
-  // const fromKey = (keyCode: string, IMPLEMENT_THIS: IMPLEMENT_THIS) =>
-  //   key$.pipe(
-  //     filter(({ code }) => code === keyCode),
-  //     map(() => IMPLEMENT_THIS)
-  //   );
-
   /**
    * /Hint/: QW4gb2JqZWN0IGxpa2UgeyBheGlzOiAneCcgfCAneScsIGFtb3VudDogaW50IH0gY2FuIGJlIHVzZWQgdG8gcmVwcmVzZW50IGEgcGFydGljdWxhciBrZXlwcmVzcy4gRS5nLiBQcmVzc2luZyBLZXlBIG1pZ2h0IHByb2R1Y2UgeyBheGlzOiAneCcsIGFtb3VudDogLTEwIH0=
    */
@@ -283,19 +275,16 @@ function keyboardControl() {
 
   merge(left$, down$, up$, right$)
     .pipe(
-      scan((acc, obj) => obj.axis === "x" ? ({x: acc.x + obj.amount, y: acc.y}) : ({x: acc.x, y: acc.y + obj.amount}), {x: 100, y: 100})
+      scan((acc, obj) => 
+        obj.axis === "x" ? 
+        ({x: acc.x + obj.amount >= 0 && acc.x + obj.amount <= SVG_WIDTH - startProps.width ? acc.x + obj.amount : acc.x , y: acc.y}) : 
+        ({x: acc.x, y: acc.y - obj.amount >= 0 && acc.y - obj.amount <= SVG_HEIGHT - startProps.height ? acc.y - obj.amount : acc.y}), 
+        {x: startProps.x, y: startProps.y})
     )
-    .subscribe(({ x, y }: IMPLEMENT_THIS) => {
+    .subscribe(({ x, y }: {x: number, y: number}) => {
       rect.setAttribute("x", String(x));
       rect.setAttribute("y", String(y));
     });
-
-  // IMPLEMENT_THIS(left$, down$, up$, right$)
-  //   .pipe()
-  //   .subscribe(({ x, y }: IMPLEMENT_THIS) => {
-  //     rect.setAttribute("x", String(x));
-  //     rect.setAttribute("y", String(y));
-  //   });
 }
 
 /**
