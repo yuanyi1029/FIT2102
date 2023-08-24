@@ -1,5 +1,5 @@
 ---
-title: Week 5 Exercises
+title: Week 4 Exercises
 ---
 
 This week we will implement a simple observable stream that approximates
@@ -28,7 +28,7 @@ approximate Pi value.
 
 ## PI Approximation introduction and scenario
 
-> This is **non-essential** information that provides additional context to th*e exercise and additional explanations. Read this if you are interested.
+> This is **non-essential** information that provides additional context to the exercise and additional explanations. Read this if you are interested.
 
 You’re the newest hire on a data visualisation team that’s working on visualising the process of approximating Pi using the Monte Carlo method. Congratulations!
 

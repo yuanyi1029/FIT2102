@@ -1,0 +1,247 @@
+/*-----Default theme-----*/
+:root {
+  --bg-color: #fbf9ff;
+  --collapse-bg-color: #e6e6e6;
+  --collapse-bg-color-hover: #b4b4b4;
+  --collapse-color-after: #323232;
+  --test-fail-color: #c00;
+  --test-border: 1px solid #eee;
+  --test-shadow: 0 1px 3px #eee;
+  --test-border-rad: 3px;
+}
+
+/*-----Dark theme-----*/
+[data-theme="dark"] {
+  --bg-color: #121619;
+  --text-color: #fbf9ff;
+  --link-color: #e6d15c;
+  --title-color: #2081c3;
+  --collapse-bg-color: #1f1f1f;
+  --collapse-color: white;
+  --collapse-bg-color-hover: #555;
+  --collapse-color-after: #aaaaaa;
+  --test-fail-color: #e65f5c;
+  --test-pass-color: #9bc53d;
+  --test-border: 0;
+  --test-shadow: 0 0 0 #eee;
+  --test-border-rad: 0;
+}
+
+/*-----Mocha style overwrite-----*/
+#mocha .test pre.error {
+  color: var(--test-fail-color) !important;
+}
+
+#mocha-stats {
+  color: var(--text-color) !important;
+}
+
+#mocha-stats em {
+  color: var(--text-color) !important;
+}
+
+#mocha .test.pass {
+  color: var(--test-pass-color) !important;
+}
+
+#mocha .test pre {
+  border: var(--test-border) !important;
+  box-shadow: var(--test-shadow) !important;
+  border-radius: var(--test-border-rad) !important;
+}
+
+#mocha .test.fail {
+  color: var(--test-fail-color) !important;
+}
+
+#mocha code {
+  color: var(--text-color) !important;
+}
+
+/*-----Dark-Light variable theme-----*/
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+a {
+  color: var(--link-color);
+}
+
+h1 {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  color: var(--title-color);
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 26.4px;
+}
+
+h3 {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  color: var(--title-color);
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 15.4px;
+}
+
+h4 {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  color: var(--title-color);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 15.4px;
+}
+
+.collapsible {
+  background-color: var(--collapse-bg-color);
+  color: var(--collapse-color);
+  cursor: pointer;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active,
+.collapsible:hover {
+  background-color: var(--collapse-bg-color-hover);
+}
+
+.collapsible:after {
+  content: "show instructions \002B";
+  color: var(--collapse-color-after);
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+/*-----Common Theme-----*/
+
+.main-div {
+  font-size: 16px;
+  display: block;
+  float: left;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.description {
+  margin: 2% 5% 0 5%;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-bottom: 15px;
+}
+
+#mocha {
+  margin: 0 0 !important;
+}
+
+#mocha .suite {
+  margin-left: 0 !important;
+}
+
+.replay {
+  /* hide the mocha replay buttons */
+  visibility: hidden;
+}
+
+p,
+.list {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.active:after {
+  content: "hide instructions \2212";
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+}
+
+task {
+  color: #2081c3;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.sliderWrapper {
+  /* display: inline-block; */
+  left: 5%;
+  top: 15px;
+  position: relative;
+}
+
+.sliderWrapper div {
+  display: inline-block;
+  line-height: 60px;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  vertical-align: middle;
+  position: relative;
+  display: inline-block;
+  padding: 0;
+  width: 54px;
+  height: 28px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  display: none;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d7d7d7;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 1px;
+  bottom: 1px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #1fb5ad;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #1fb5ad;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
