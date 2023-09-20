@@ -46,9 +46,21 @@ data BinTree a = Leaf | Node a (BinTree a) (BinTree a)
 -- |- 4
 -- |- |- 5
 -- |- |- 6
-pretty :: Show a => BinTree a -> String
-pretty = undefined
 
+pretty :: Show a => BinTree a -> String
+pretty tree = _pretty tree "|- "
+
+_pretty :: Show a => BinTree a -> String -> String
+_pretty Leaf _ = ""
+_pretty (Node value left right) prefix = 
+  show value ++ 
+  (case _pretty left (prefix ++ "|- ") of
+    "" -> ""
+    leftValue -> "\n" ++ prefix ++ leftValue) ++ 
+  (case _pretty right (prefix ++ "|- ") of
+    "" -> ""
+    rightValue -> "\n" ++ prefix ++ rightValue)  
+  
 {-
 
 function prettifyBinaryTree<T extends Object>(node: BinaryTree<T>): string {

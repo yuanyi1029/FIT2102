@@ -17,8 +17,8 @@ import BinTree (BinTree (..), pretty)
 -- >>> char ""
 -- Nothing
 char :: String -> Maybe (String, Char)
-char _ = Just undefined -- Replace the arguments with something sensible
-char _ = Nothing
+char (c : rest) = Just (rest, c) 
+char "" = Nothing
 
 -- | Parse numbers as int until non-digit
 --
@@ -52,7 +52,7 @@ int s = case (reads s :: [(Int, String)]) of
 -- Nothing
 is :: Char -> String -> Maybe (String, Char)
 is c s = case char s of
-  -- Add a case here for the Just condition
+  Just (rest, c1) -> if c1 == c then Just(rest, c1) else Nothing
   _ -> Nothing
 
 data IntPair = IntPair Int Int
@@ -66,10 +66,10 @@ data IntPair = IntPair Int Int
 -- >>> parseIntPair "anc10 20"
 -- Nothing
 parseIntPair :: String -> Maybe (String, IntPair)
-parseIntPair s = case undefined of
+parseIntPair s = case int s of
   Just (r1, x) -> case is ' ' r1 of
-    Just (r2, _) -> case undefined of
-      Just (r3, y) -> undefined
+    Just (r2, _) -> case int r2 of
+      Just (r3, y) -> Just("", IntPair x y)
       Nothing -> Nothing
     Nothing -> Nothing
   Nothing -> Nothing
@@ -84,7 +84,7 @@ parseIntPair s = case undefined of
 -- >>> comma "cba"
 -- Nothing
 comma :: String -> Maybe (String, Char)
-comma = undefined
+comma = is ','
 
 -- | Parse a tuple with two integers
 --
@@ -104,7 +104,15 @@ comma = undefined
 -- >>> parseIntTuple2 "[10,2)"
 -- Nothing
 parseIntTuple2 :: String -> Maybe (String, (Int, Int))
-parseIntTuple2 = undefined
+parseIntTuple2 s = case is '(' s of
+  Just (r1, _) -> case int r1 of
+    Just (r2, x) -> case comma r2 of
+      Just (r3, _) -> case int r3 of 
+        Just (r4, y) -> Just ("", (x, y))
+        Nothing -> Nothing
+      Nothing -> Nothing
+    Nothing -> Nothing
+  Nothing -> Nothing
 
 -- | Parse a serialised BinaryTree string into a BinaryTree.
 --
@@ -141,7 +149,9 @@ parseBinaryTree s = case leaf s of
 -- >>> leaf "(1LL)"
 -- Nothing
 leaf :: String -> Maybe (String, BinTree Int)
-leaf s = undefined
+leaf s = case is 'L' s of 
+  Just (rest, l) -> Just (rest, Leaf)
+  Nothing -> Nothing
 
 -- | Parse a Node
 --
@@ -157,7 +167,18 @@ leaf s = undefined
 -- >>> node "(1(2LL)(3LL))"
 -- Just ("",Node 1 (Node 2 Leaf Leaf) (Node 3 Leaf Leaf))
 node :: String -> Maybe (String, BinTree Int)
-node s = undefined
+
+node s = case is '(' s of 
+  Just (r1, _) -> case int r1 of
+    Just (r2, value) -> case parseBinaryTree r2 of
+      Just (r3, left) -> case parseBinaryTree r3 of
+        Just (r4, right) -> case is ')' r4 of 
+          Just (r5, _) -> Just (r5, Node value left right)
+          Nothing -> Nothing
+        Nothing -> Nothing
+      Nothing -> Nothing
+    Nothing -> Nothing
+  Nothing -> Nothing
 
 -- | Prettify a string representation of a binary tree.
 --
@@ -186,6 +207,6 @@ node s = undefined
 -- |- |- 5
 -- |- |- 6
 prettifyBinaryTree :: String -> String
-prettifyBinaryTree s = case undefined of
-  Just _ -> undefined -- Replace the arguments with something sensible
+prettifyBinaryTree s = case parseBinaryTree s of
+  Just ("", tree) -> pretty tree -- Replace the arguments with something sensible
   _ -> "Invalid input"

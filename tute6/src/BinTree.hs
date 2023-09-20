@@ -55,7 +55,7 @@ depth (Node _ left right) = 1 + max (depth left) (depth right)
 -- >>> mapTree (+1) Leaf
 -- Leaf
 --
--- >>> mapTree (*1) one
+-- >>> mapTree (*1) one 
 -- Node 1 Leaf Leaf
 --
 -- >>> mapTree (`mod` 2) tree
