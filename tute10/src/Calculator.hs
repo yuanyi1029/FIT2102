@@ -15,7 +15,11 @@ data Expr = Plus Expr Expr | Minus Expr Expr | Times Expr Expr | Number Int
 -- >>> parse (op '+') " -123"
 -- Unexpected character: "-"
 op :: Char -> Parser Char
-op = undefined
+op c = do
+   _ <- spaces
+   _ <- charTok c
+   pure c
+-- op c = spaces >>= \_ -> is c >> pure c
 
 -- | Parse an integer.
 --
@@ -31,7 +35,7 @@ op = undefined
 -- >>> parse number " a0"
 -- Unexpected character: "a"
 number :: Parser Expr -- parse a Number
-number = undefined
+number = spaces *> (Number <$> int)
 
 -- Parse the "+" operator
 -- >>> parse (add <*> pure (Number 1) <*> pure (Number 2)) "+"
@@ -39,7 +43,7 @@ number = undefined
 -- >>> parse (add <*> pure (Number 1) <*> pure (Number 2)) "*"
 -- Unexpected character: "*"
 add :: Parser (Expr -> Expr -> Expr)
-add = undefined
+add = op '+' >> pure Plus
 
 -- Parse the "-" operator
 -- >>> parse (minus <*> pure (Number 1) <*> pure (Number 2)) "-"
@@ -47,7 +51,7 @@ add = undefined
 -- >>> parse (minus <*> pure (Number 1) <*> pure (Number 2)) "*"
 -- Unexpected character: "*"
 minus :: Parser (Expr -> Expr -> Expr)
-minus = undefined
+minus = op '-' >> pure Minus
 
 -- Parse the "*" operator
 -- >>> parse (times <*> pure (Number 1) <*> pure (Number 2)) "*"
@@ -55,7 +59,7 @@ minus = undefined
 -- >>> parse (times <*> pure (Number 1) <*> pure (Number 2)) "+"
 -- Unexpected character: "+"
 times :: Parser (Expr -> Expr -> Expr)
-times = undefined
+times = op '*' >> pure Times
 
 -- We will be developing this calculator in three stages
 -- Stage 1: Parse with explicit brackets
@@ -78,7 +82,10 @@ times = undefined
 bracketExpr :: Parser Expr
 bracketExpr =
   number <|> do
-    undefined -- What do we do here?
+    _ <- is '('
+    a <- parseAddMinus
+    _ <- is ')'
+    pure a
 
 -- | *** Stage 2 ***
 -- Make sure you read the course notes: https://tgdwyer.github.io/parsercombinators/
@@ -93,7 +100,7 @@ bracketExpr =
 -- >>> parse multiplicationTerms "+1"
 -- Unexpected character: "+"
 multiplicationTerms :: Parser Expr
-multiplicationTerms = undefined
+multiplicationTerms = chain bracketExpr times
 
 -- | Expression consisting of terms and lower precedence operators
 -- You will need to chain multiplication over lower precedence operators
@@ -103,8 +110,7 @@ multiplicationTerms = undefined
 -- >>> parse parseAddMinus " 6 *4 + 333- 8 *  24"
 -- Result >< Minus (Plus (Times (Number 6) (Number 4)) (Number 333)) (Times (Number 8) (Number 24))
 parseAddMinus :: Parser Expr
-parseAddMinus = undefined
-
+parseAddMinus = chain multiplicationTerms (add <|> minus)
 
 -- This should be one of the previous two parsers, which one? and why?
 -- >>> parse parseNoBracketCalc " 12 + 21* 3 "
@@ -113,7 +119,7 @@ parseAddMinus = undefined
 -- >>> parse parseNoBracketCalc " 6 *4 + 333- 8 *  24"
 -- Result >< Minus (Plus (Times (Number 6) (Number 4)) (Number 333)) (Times (Number 8) (Number 24))
 parseNoBracketCalc :: Parser Expr
-parseNoBracketCalc = undefined
+parseNoBracketCalc = parseAddMinus
 
 -- | *** Stage 3 ***
 
@@ -123,7 +129,12 @@ parseNoBracketCalc = undefined
 -- >>> parse (parens (is 'a')) "(b)"
 -- Unexpected character: "b"
 parens :: Parser a -> Parser a
-parens p = undefined
+parens p = do
+  _ <- spaces
+  _ <- is '('
+  a <- p
+  _ <- is ')'
+  pure a
 
 -- Parses a number or a low precedence sub-expression enclosed in parentheses
 -- >>> parse numberOrParenthesizedExpr "1"
@@ -131,13 +142,13 @@ parens p = undefined
 -- >>> parse numberOrParenthesizedExpr "(1+34)"
 -- Result >< Plus (Number 1) (Number 34)
 numberOrParenthesizedExpr :: Parser Expr
-numberOrParenthesizedExpr = undefined
+numberOrParenthesizedExpr = chain (number <|> parens parseNoBracketCalc) times
 
 -- Chain higherPrecedenceExpr separated by lower precedence operators
 -- >>> parse lowerPrecedenceExpr "1+2"
 -- Result >< Plus (Number 1) (Number 2)
 lowerPrecedenceExpr :: Parser Expr
-lowerPrecedenceExpr = undefined
+lowerPrecedenceExpr = chain numberOrParenthesizedExpr (add <|> minus)
 
 -- Chain the multiplication operator over either a number or parenthesized expression
 -- >>> parse higherPrecedenceExpr "1 * 2"
@@ -145,7 +156,7 @@ lowerPrecedenceExpr = undefined
 -- >>> parse higherPrecedenceExpr "(1 * 2)"
 -- Result >< Times (Number 1) (Number 2)
 higherPrecedenceExpr  :: Parser Expr
-higherPrecedenceExpr = undefined
+higherPrecedenceExpr = chain (number <|> parens parseNoBracketCalc) times
 
 -- This should be one of the previous three parsers, which one? and why?
 -- >>> parse parseFullCalc "(1+2+3*(4+5))+10*100-5+4"
@@ -155,7 +166,7 @@ higherPrecedenceExpr = undefined
 -- >>> parse parseFullCalc "(1+2+3)"
 -- Result >< Plus (Plus (Number 1) (Number 2)) (Number 3)
 parseFullCalc :: Parser Expr
-parseFullCalc = undefined
+parseFullCalc = parseNoBracketCalc
 
 -- Now we have a parser which can handle any mathematical expression, lets evaluate the expression
 -- Your parser should return expression with correct precedence.
@@ -166,7 +177,11 @@ parseFullCalc = undefined
 -- >>> evalExpr (Plus (Minus (Plus (Plus (Plus (Number 1) (Number 2)) (Times (Number 3) (Plus (Number 4) (Number 5)))) (Times (Number 10) (Number 100))) (Number 5)) (Number 4))
 -- 1029
 evalExpr :: Expr -> Int
-evalExpr _ = undefined
+evalExpr e = case e of
+  Number n -> n
+  Plus e1 e2 -> evalExpr e1 + evalExpr e2
+  Minus e1 e2 -> evalExpr e1 - evalExpr e2
+  Times e1 e2 -> evalExpr e1 * evalExpr e2
 
 -- Print the result to the screen
 -- If the parse is successful, prepend "Result: " to the calculated value
@@ -178,7 +193,9 @@ evalExpr _ = undefined
 -- >>> showExprResult (Error UnexpectedEof)
 -- Unexpected end of stream
 showExprResult :: ParseResult Expr -> IO ()
-showExprResult _ = undefined
+showExprResult res = case res of
+  Result _ e -> putStrLn $ "Result: " ++ show (evalExpr e)
+  Error e -> print e
 
 -- Given a filename, evaluate every line in the file
 -- This will require parsing the line, and then evaluating in to a single number
@@ -189,7 +206,9 @@ showExprResult _ = undefined
 -- Result: 32
 -- Result: 36
 processFile :: FilePath -> IO ()
-processFile fileName = undefined
+processFile fileName = do
+  contents <- readFile fileName
+  mapM_ showExprResult $ map (parse parseFullCalc) $ lines contents
 
 -- Instructions:
 -- Your task is to complete the implementation of the `repl` function to create a
@@ -238,11 +257,15 @@ processFile fileName = undefined
 repl :: IO ()
 repl = do
   putStrLn "Enter an arithmetic expression, 'f' to enter a file name or 'q' to quit:"
-  input <- undefined 
+  input <- getLine
   case input of
     "q" -> do
-      undefined
+      putStrLn "Goodbye!"
     "f" -> do
-      undefined
+      putStrLn "Enter a file name:"
+      fileName <- getLine
+      processFile fileName
+      repl
     eqn -> do
-      undefined
+      showExprResult $ parse parseFullCalc eqn
+      repl

@@ -51,8 +51,10 @@ instance Functor ParseResult where
 -- prop> \i j -> parse (p i >>= add j) "" == Result "" (i + j)
 instance Monad Parser where
   (>>=) :: Parser a -> (a -> Parser b) -> Parser b
-  (>>=) (P p) f = undefined 
-
+  (>>=) (P p) f = P $ \i -> case p i of 
+    Result rest x -> parse (f x) rest
+    Error e -> Error e 
+    
 -- Parser Instances
 
 -- | Functor instance for a parser
@@ -64,7 +66,7 @@ instance Monad Parser where
 -- Unexpected end of stream
 instance Functor Parser where
   fmap :: (a -> b) -> Parser a -> Parser b
-  fmap f pa = undefined
+  fmap f pa = pa >>= \x -> pure (f x)
 
   -- fmap f (P p) = P $ \i -> case p i of
   --   Result rest x -> parse (pure (f x)) rest
@@ -87,8 +89,12 @@ instance Applicative Parser where
 
   -- Write this using bind
   (<*>) :: Parser (a -> b) -> Parser a -> Parser b
-  (<*>) p q = undefined
+  (<*>) p q = do
+    f <- p
+    x <- q
+    pure (f x)
 
+    
   -- (<*>) (P p) q = P $ \i -> case p i of
   --   Result rest f -> parse (f <$> q) rest
   --   Error e -> Error e

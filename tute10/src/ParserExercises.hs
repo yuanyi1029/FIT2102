@@ -58,7 +58,11 @@ unexpectedCharParser = P . const . Error . UnexpectedChar
 -- >>> parse (satisfy isUpper) "abc"
 -- Unexpected character: "a"
 satisfy :: (Char -> Bool) -> Parser Char
-satisfy f = undefined
+satisfy f = do
+  c <- char
+  if f c 
+    then pure c
+    else unexpectedCharParser c
 
 -- | Return a parser that produces the given character but fails if:
 --
@@ -76,7 +80,7 @@ satisfy f = undefined
 -- >>> parse (is 'c') "b"
 -- Unexpected character: "b"
 is :: Char -> Parser Char
-is = undefined
+is = satisfy . (==) 
 
 -- | Return a parser that produces any character but fails if:
 --
@@ -94,7 +98,7 @@ is = undefined
 -- >>> parse (isNot 'c') "c"
 -- Unexpected character: "c"
 isNot :: Char -> Parser Char
-isNot = undefined
+isNot = satisfy . (/=) 
 
 -- | Return a parser that produces a space character but fails if
 --
@@ -109,5 +113,7 @@ isNot = undefined
 -- >>> parse space ""
 -- Unexpected end of stream
 space :: Parser Char
-space = undefined
+space = satisfy isSpace
+
+
 
